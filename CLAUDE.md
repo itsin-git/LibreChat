@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm ci                          # Install dependencies
 npm run build:data-provider     # Build data provider package
-npm run build:mcp              # Build MCP package  
+npm run build:api              # Build API package (correct name, not build:mcp)
 npm run build:data-schemas     # Build data schemas package
 ```
 
@@ -30,6 +30,9 @@ npm run test:api              # Run backend unit tests
 npm run test:client           # Run frontend unit tests
 npm run e2e                   # Run Playwright e2e tests
 npm run e2e:headed            # Run e2e tests with browser UI
+npm run e2e:debug             # Debug e2e tests with Playwright inspector
+npm run e2e:codegen           # Generate e2e test code interactively
+npm run e2e:a11y              # Run accessibility tests
 ```
 
 ### Linting & Formatting
@@ -42,15 +45,31 @@ npm run format                # Prettier format
 ### User Management Scripts
 ```bash
 npm run create-user           # Create new user
+npm run invite-user           # Send user invitation
 npm run add-balance           # Add user balance
+npm run set-balance           # Set user balance
 npm run list-users            # List all users
+npm run list-balances         # List user balances
+npm run user-stats            # Show user statistics
 npm run ban-user              # Ban user
+npm run delete-user           # Delete user account
+npm run reset-password        # Reset user password
 ```
 
 ### Docker Commands
 ```bash
 npm run start:deployed        # Start with docker-compose
 npm run stop:deployed         # Stop docker containers
+```
+
+### Alternative Build System (Bun)
+LibreChat supports Bun as an alternative to npm for faster builds:
+```bash
+bun install                   # Install dependencies with Bun
+npm run b:client              # Build frontend with Bun
+npm run b:api:dev             # Run backend in dev mode with Bun
+npm run b:test:client         # Run client tests with Bun
+npm run b:test:api            # Run API tests with Bun
 ```
 
 ## Architecture Overview
@@ -66,10 +85,11 @@ LibreChat is a full-stack AI chat platform with the following high-level archite
 ### Key Directories
 - `/api/` - Express.js backend with clients, controllers, models, services
 - `/client/` - React frontend with components, hooks, stores (Recoil)
-- `/packages/` - Shared packages:
-  - `data-provider` - API client and data services
-  - `data-schemas` - Mongoose schemas and TypeScript types
-  - `mcp` - Model Context Protocol implementation
+- `/packages/` - Shared packages (npm workspaces):
+  - `data-provider` - API client and data services for frontend/backend communication
+  - `data-schemas` - Mongoose schemas and TypeScript types shared across all packages
+  - `api` - Backend utilities, middleware, and shared API logic
+  - `agents` - AI agent system with LLM integrations and tools
 - `/config/` - Administrative scripts and utilities
 - `/e2e/` - Playwright end-to-end tests
 
@@ -102,6 +122,13 @@ LibreChat is a full-stack AI chat platform with the following high-level archite
 5. **Models** → MongoDB operations via Mongoose
 6. **Streaming** → Real-time responses back to frontend
 
+### Package Dependencies & Build Order
+The monorepo uses npm workspaces with internal package dependencies:
+- **Backend server** depends on `@librechat/api` package
+- **Frontend** depends on `librechat-data-provider` and `@librechat/data-schemas`
+- **All packages** must be built before starting development servers
+- **Build order matters**: data-schemas → data-provider → api → frontend
+
 ## Development Workflow
 
 ### Prerequisites
@@ -112,8 +139,10 @@ LibreChat is a full-stack AI chat platform with the following high-level archite
 ### Initial Setup
 1. Copy `.env.example` to `.env` and configure required variables
 2. Run `npm ci` to install all dependencies
-3. Build shared packages: `npm run build:data-provider && npm run build:mcp && npm run build:data-schemas`
+3. Build shared packages: `npm run build:data-provider && npm run build:api && npm run build:data-schemas`
 4. For testing: Copy `api/test/.env.test.example` to `api/test/.env.test`
+
+**Important**: If you encounter `Cannot find module '@librechat/api'` errors when starting the backend, ensure all shared packages are built first. The backend depends on these compiled packages.
 
 ### Code Standards
 - **Commits**: Use conventional commits (feat:, fix:, docs:, etc.)
