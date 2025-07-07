@@ -1,0 +1,62 @@
+name: 기능 추가 요청
+description: 새로운 기능 또는 개선 기능을 제안하고 요청합니다.
+title: "[Feature] "
+labels: [enhancement]
+assignees: []
+
+body:
+  - type: input
+    id: feature_name
+    attributes:
+      label: ✨ 기능 이름
+      description: 제안할 기능을 한 줄로 요약해 주세요.
+      placeholder: 예) 사용자 알림 설정 추가
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_goal
+    attributes:
+      label: 🔍 기능 목적 및 필요성
+      description: 이 기능이 필요한 이유 또는 해결하려는 문제를 설명해 주세요.
+      placeholder: |
+        - 사용자가 알림을 개별적으로 설정할 수 없어서 불편함
+        - UX 개선을 위해 필요
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: 🛠 기능 설명
+      description: 어떤 방식으로 작동하길 원하는지 구체적으로 설명해 주세요.
+      placeholder: |
+        - 알림 설정 ON/OFF 토글 버튼
+        - 항목별 알림 주기 설정 옵션
+    validations:
+      required: true
+
+  - type: textarea
+    id: task_checklist
+    attributes:
+      label: ✅ 작업 체크리스트
+      description: 이 기능 구현을 위해 필요한 작업들을 체크리스트로 작성해 주세요.
+      value: |
+        - [ ] UI 디자인 확정
+        - [ ] API 스펙 정의
+        - [ ] 기능 구현
+        - [ ] 테스트 코드 작성
+        - [ ] PR 생성 (Fixes #이슈번호)
+    validations:
+      required: false
+
+  - type: textarea
+    id: etc
+    attributes:
+      label: 💬 기타 참고 사항
+      description: 참고 링크, 디자인 시안, 관련 이슈 등 자유롭게 작성하세요.
+      placeholder: |
+        - Figma 링크: ...
+        - 기존 이슈: #3
+    validations:
+      required: false
