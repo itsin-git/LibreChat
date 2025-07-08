@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useMemo, memo, lazy, Suspense, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
+import { useNavigate } from 'react-router-dom';
 import { PermissionTypes, Permissions } from 'librechat-data-provider';
 import type { ConversationListResponse } from 'librechat-data-provider';
 import type { InfiniteQueryObserverResult } from '@tanstack/react-query';
@@ -20,6 +21,7 @@ import store from '~/store';
 
 const BookmarkNav = lazy(() => import('./Bookmarks/BookmarkNav'));
 const AccountSettings = lazy(() => import('./AccountSettings'));
+const MonitoringMenu = lazy(() => import('./MonitoringMenu'));
 
 const NAV_WIDTH_DESKTOP = '260px';
 const NAV_WIDTH_MOBILE = '320px';
@@ -30,7 +32,7 @@ const NavMask = memo(
       id="mobile-nav-mask-toggle"
       role="button"
       tabIndex={0}
-      className={`nav-mask transition-opacity duration-200 ease-in-out ${navVisible ? 'active opacity-100' : 'opacity-0'}`}
+      className={`nav-mask ${navVisible ? 'active' : ''}`}
       onClick={toggleNavVisible}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -53,6 +55,7 @@ const Nav = memo(
     setNavVisible: React.Dispatch<React.SetStateAction<boolean>>;
   }) => {
     const localize = useLocalize();
+    const navigate = useNavigate();
     const { isAuthenticated } = useAuthContext();
 
     const [navWidth, setNavWidth] = useState(NAV_WIDTH_DESKTOP);
@@ -186,19 +189,18 @@ const Nav = memo(
         <div
           data-testid="nav"
           className={cn(
-            'nav active max-w-[320px] flex-shrink-0 transform overflow-x-hidden bg-surface-primary-alt transition-all duration-200 ease-in-out',
+            'nav active max-w-[320px] flex-shrink-0 overflow-x-hidden bg-surface-primary-alt',
             'md:max-w-[260px]',
           )}
           style={{
             width: navVisible ? navWidth : '0px',
-            transform: navVisible ? 'translateX(0)' : 'translateX(-100%)',
+            visibility: navVisible ? 'visible' : 'hidden',
+            transition: 'width 0.2s, visibility 0.2s',
           }}
         >
           <div className="h-full w-[320px] md:w-[260px]">
             <div className="flex h-full flex-col">
-              <div
-                className={`flex h-full flex-col transition-opacity duration-200 ease-in-out ${navVisible ? 'opacity-100' : 'opacity-0'}`}
-              >
+              <div className="flex h-full flex-col transition-opacity">
                 <div className="flex h-full flex-col">
                   <nav
                     id="chat-history-nav"
@@ -206,12 +208,40 @@ const Nav = memo(
                     className="flex h-full flex-col px-2 pb-3.5 md:px-3"
                   >
                     <div className="flex flex-1 flex-col" ref={outerContainerRef}>
+                      {/* 왼쪽 사이드 바 맨위 */}
                       <MemoNewChat
                         subHeaders={subHeaders}
                         toggleNav={toggleNavVisible}
                         headerButtons={headerButtons}
                         isSmallScreen={isSmallScreen}
                       />
+                      {/* 관제 페이지 메뉴 버전1 */}
+                      <Suspense fallback={null}>
+                        <MonitoringMenu />
+                      </Suspense>
+                      {/* 관제 페이지 메뉴 버전2*/}
+                      <div className="mb-4 space-y-1">
+                        <div
+                          className="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-surface-tertiary"
+                          onClick={() => navigate('/monitoring/asset-management')}
+                        >
+                          <span>자산관리</span>
+                        </div>
+                        <div
+                          className="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-surface-tertiary"
+                          onClick={() => navigate('/monitoring/siem')}
+                        >
+                          <span>SIEM</span>
+                        </div>
+                        <div
+                          className="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-surface-tertiary"
+                          onClick={() => navigate('/monitoring/cmdb')}
+                        >
+                          <span>CMDB 정보</span>
+                        </div>
+                      </div>
+                      
+                      {/* 왼쪽 사이드 바 체팅 부분 */}
                       <Conversations
                         conversations={conversations}
                         moveToTop={moveToTop}
@@ -222,6 +252,7 @@ const Nav = memo(
                         isSearchLoading={isSearchLoading}
                       />
                     </div>
+                    {/* 왼쪽 사이드 바 맨아래 */}
                     <Suspense fallback={null}>
                       <AccountSettings />
                     </Suspense>
