@@ -51,9 +51,14 @@ export default function NewChat({
   );
 
   return (
-    <>
-      <div className="flex items-center justify-between py-[2px] md:py-2">
+    <> 
+      {/* flex items-center justify-between py-[2px] md:py-2 -> border-b border-surface-border*/}
+      <div className="flex items-center justify-between px-4 py-2 md:px-5 md:py-3">
+        <h2 className="text-white font-bold">
+          이츠인<span className="ml-1">( Itsin )</span>
+        </h2>
         <TooltipAnchor
+          //title="좌측 사이드 메뉴 토글 버튼"
           description={localize('com_nav_close_sidebar')}
           render={
             <Button
@@ -61,20 +66,27 @@ export default function NewChat({
               variant="outline"
               data-testid="close-sidebar-button"
               aria-label={localize('com_nav_close_sidebar')}
-              className="rounded-full border-none bg-transparent p-2 hover:bg-surface-hover md:rounded-xl"
+              // className="rounded-full border-none bg-transparent p-2 hover:bg-surface-hover md:rounded-xl"
+              className="rounded-full border-none bg-transparent hover:bg-transparent p-1 md:rounded-xl scale-95 hover:scale-105 transition-all duration-200 ease-in-out"
               onClick={toggleNav}
             >
-              <Sidebar className="max-md:hidden" />
-              <MobileSidebar className="m-1 inline-flex size-10 items-center justify-center md:hidden" />
+              {/* 사이드바 아이콘 색 변경 */}
+              <Sidebar className="max-md:hidden text-white" />
+              <MobileSidebar className="m-1 inline-flex size-10 items-center justify-center md:hidden text-white" />
             </Button>
           }
         />
-        <div className="flex">
+        {/* 북마크, 새 채팅 버튼 숨김 */}
+        <div className="flex hidden">
+          {/* 북마크버튼 */}
           {headerButtons}
+
+          {/* 새 채팅 버튼 */}
           <TooltipAnchor
             description={localize('com_ui_new_chat')}
             render={
               <Button
+                // title="새 채팅 버튼"
                 size="icon"
                 variant="outline"
                 data-testid="nav-new-chat-button"

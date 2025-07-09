@@ -18,6 +18,7 @@ import ChatRoute from './ChatRoute';
 import Search from './Search';
 import Root from './Root';
 import BlankPage from '~/components/MonitoringPage/BlankPage';
+import { SupportPage } from '~/components/SupportPage';
 
 const AuthLayout = () => (
   <AuthContextProvider>
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
           {
             path: 'monitoring/:page',
             element: <BlankPage />,
+          },
+          {
+            path: 'support/:page',
+            element: <SupportPage />,
           },
         ],
       },

@@ -28,11 +28,14 @@ function AccountSettings() {
   return (
     <Select.SelectProvider>
       <Select.Select
+        // title="사용자버튼"
         aria-label={localize('com_nav_account_settings')}
-        data-testid="nav-user"
-        className="mt-text-sm flex h-auto w-full items-center gap-2 rounded-xl p-2 text-sm transition-all duration-200 ease-in-out hover:bg-surface-hover"
+        data-testid="nav-user" 
+        // mt-text-sm flex h-auto w-full items-center gap-2 rounded-xl p-2 text-sm transition-all duration-200 ease-in-out hover:bg-surface-hover 마우스 올리면 변환
+        className="bg-[#145082] mt-text-sm flex h-auto w-full items-center gap-2 rounded-xl px-4 py-2 md:px-3 md:py-3 text-sm transition-all duration-200 ease-in-out hover:bg-surface-hover hover:bg-[#1F78C1]"
       >
-        <div className="-ml-0.9 -mt-0.8 h-8 w-8 flex-shrink-0">
+        {/* 사용자 동그라미 프로필 */}
+        <div className="-ml-0.9 -mt-0.8 h-12 w-12 flex-shrink-0">
           <div className="relative flex">
             {avatarSeed.length === 0 ? (
               <div
@@ -57,10 +60,34 @@ function AccountSettings() {
           </div>
         </div>
         <div
-          className="mt-2 grow overflow-hidden text-ellipsis whitespace-nowrap text-left text-text-primary"
+          className="mt-2 flex flex-col gap-2 items-start grow overflow-hidden text-ellipsis whitespace-nowrap text-left text-white leading-none"
           style={{ marginTop: '0', marginLeft: '0' }}
         >
-          {user?.name ?? user?.username ?? localize('com_nav_user')}
+          {/* {user?.name ?? user?.username ?? localize('com_nav_user')} */}
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-[10px] bg-[#d6900d] text-white rounded-full px-2 py-0.5">
+              SOC
+            </span>
+            <span className="text-xl font-bold text-white flex items-center gap-1">
+              {user?.name ?? user?.username ?? localize('com_nav_user')} 님
+              {/* 화살표 아이콘 */}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.83342 16.6667L14.1667 10L5.83342 3.33337"
+                  stroke="white"
+                  strokeWidth="2.08333"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </div>
         </div>
       </Select.Select>
       <Select.SelectPopover
@@ -92,7 +119,8 @@ function AccountSettings() {
           <FileText className="icon-md" aria-hidden="true" />
           {localize('com_nav_my_files')}
         </Select.SelectItem>
-        {startupConfig?.helpAndFaqURL !== '/' && (
+        {/* 좌측 사이드바 하단에 도움말 및 FAQ 추가 하므로 해당 코드 주석처리 */}
+        {/* {startupConfig?.helpAndFaqURL !== '/' && (
           <Select.SelectItem
             value=""
             onClick={() => window.open(startupConfig?.helpAndFaqURL, '_blank')}
@@ -101,7 +129,7 @@ function AccountSettings() {
             <LinkIcon aria-hidden="true" />
             {localize('com_nav_help_faq')}
           </Select.SelectItem>
-        )}
+        )} */}
         <Select.SelectItem
           value=""
           onClick={() => setShowSettings(true)}
