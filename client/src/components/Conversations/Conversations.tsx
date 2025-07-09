@@ -1,12 +1,17 @@
 import { useMemo, memo, type FC, useCallback } from 'react';
 import throttle from 'lodash/throttle';
 import { parseISO, isToday } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { useLocalize, TranslationKeys, useMediaQuery } from '~/hooks';
-import { TConversation } from 'librechat-data-provider';
+import { useLocalize, TranslationKeys, useMediaQuery, useNewConvo } from '~/hooks';
+import { TConversation, QueryKeys, Constants } from 'librechat-data-provider';
+import type { TMessage } from 'librechat-data-provider';
 import { groupConversationsByDate } from '~/utils';
-import { Spinner } from '~/components/svg';
+import { Spinner, NewChatIcon } from '~/components/svg';
+import { Button } from '~/components/ui';
 import Convo from './Convo';
+import store from '~/store';
 
 interface ConversationsProps {
   conversations: Array<TConversation | null>;
@@ -16,6 +21,7 @@ interface ConversationsProps {
   loadMoreConversations: () => void;
   isLoading: boolean;
   isSearchLoading: boolean;
+  headerButtons?: React.ReactNode;
 }
 
 const LoadingSpinner = memo(() => {
@@ -84,7 +90,13 @@ const Conversations: FC<ConversationsProps> = ({
   loadMoreConversations,
   isLoading,
   isSearchLoading,
+  headerButtons,
 }) => {
+  const localize = useLocalize();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { newConversation: newConvo } = useNewConvo();
+  const { conversation } = store.useCreateConversationAtom();
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const convoHeight = isSmallScreen ? 44 : 34;
 
@@ -186,6 +198,23 @@ const Conversations: FC<ConversationsProps> = ({
     [loadMoreConversations],
   );
 
+  const handleNewChat = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (e.button === 0 && (e.ctrlKey || e.metaKey)) {
+      window.open('/c/new', '_blank');
+      return;
+    }
+    queryClient.setQueryData<TMessage[]>(
+      [QueryKeys.messages, conversation?.conversationId ?? Constants.NEW_CONVO],
+      [],
+    );
+    queryClient.invalidateQueries([QueryKeys.messages]);
+    newConvo();
+    navigate('/c/new', { state: { focusChat: true } });
+    if (isSmallScreen) {
+      toggleNav();
+    }
+  }, [queryClient, conversation, newConvo, navigate, toggleNav, isSmallScreen]);
+
   const handleRowsRendered = useCallback(
     ({ stopIndex }: { stopIndex: number }) => {
       if (stopIndex >= flattenedItems.length - 8) {
@@ -203,8 +232,28 @@ const Conversations: FC<ConversationsProps> = ({
           <span className="ml-2 text-text-primary">Loading...</span>
         </div>
       ) : (
-        <div className="flex-1">
-          <AutoSizer>
+        <div className="flex flex-1 flex-col">
+          {/* AI 채팅 헤더 */}
+          <div className="flex items-center justify-between px-4 py-2 md:px-3 md:py-3 border-t border-gray-300 flex-shrink-0">
+            <h2 className="text-base font-bold">AI 채팅</h2>
+            <div className="flex items-center gap-2">
+              {headerButtons}
+              
+              <Button
+                size="icon"
+                variant="outline"
+                data-testid="new-chat-button"
+                aria-label={localize('com_ui_new_chat')}
+                className="rounded-full border-none bg-transparent hover:bg-transparent p-1 md:rounded-xl scale-95 hover:scale-105 transition-all duration-200 ease-in-out"
+                onClick={handleNewChat}
+              >
+                <NewChatIcon className="icon-md md:h-6 md:w-6" />
+              </Button>
+            </div>
+          </div>
+          {/* 대화 리스트 */}
+          <div className="flex-1">
+            <AutoSizer>
             {({ width, height }) => (
               <List
                 ref={containerRef as React.RefObject<List>}
@@ -223,7 +272,8 @@ const Conversations: FC<ConversationsProps> = ({
                 tabIndex={-1}
               />
             )}
-          </AutoSizer>
+            </AutoSizer>
+          </div>
         </div>
       )}
     </div>

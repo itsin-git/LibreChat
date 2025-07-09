@@ -22,6 +22,7 @@ import store from '~/store';
 const BookmarkNav = lazy(() => import('./Bookmarks/BookmarkNav'));
 const AccountSettings = lazy(() => import('./AccountSettings'));
 const MonitoringMenu = lazy(() => import('./MonitoringMenu'));
+const SupportButtons = lazy(() => import('./SupportButtons'));
 
 const NAV_WIDTH_DESKTOP = '260px';
 const NAV_WIDTH_MOBILE = '320px';
@@ -188,14 +189,28 @@ const Nav = memo(
       <>
         <div
           data-testid="nav"
+          // 좌측 사이드메뉴
+          // 원본코드
+          // className={cn(
+          //   'nav active max-w-[320px] flex-shrink-0 overflow-x-hidden bg-surface-primary-alt',
+          //   'md:max-w-[260px]',
+          // )}
+          // style={{
+          //   width: navVisible ? navWidth : '0px',
+          //   visibility: navVisible ? 'visible' : 'hidden',
+          //   transition: 'width 0.2s, visibility 0.2s',
+          // }}
+
+          // 수정된 코드
           className={cn(
             'nav active max-w-[320px] flex-shrink-0 overflow-x-hidden bg-surface-primary-alt',
-            'md:max-w-[260px]',
+            'md:max-w-[260px] rounded-tr-3xl',
           )}
           style={{
             width: navVisible ? navWidth : '0px',
             visibility: navVisible ? 'visible' : 'hidden',
             transition: 'width 0.2s, visibility 0.2s',
+            boxShadow: 'rgba(0, 0, 0, 0.30) 0px 0px 20px 0px',
           }}
         >
           <div className="h-full w-[320px] md:w-[260px]">
@@ -205,22 +220,33 @@ const Nav = memo(
                   <nav
                     id="chat-history-nav"
                     aria-label={localize('com_ui_chat_history')}
-                    className="flex h-full flex-col px-2 pb-3.5 md:px-3"
+                    // className="flex h-full flex-col px-2 pb-3.5 md:px-3"
+                    className="flex h-full flex-col"
                   >
                     <div className="flex flex-1 flex-col" ref={outerContainerRef}>
-                      {/* 왼쪽 사이드 바 맨위 */}
-                      <MemoNewChat
-                        subHeaders={subHeaders}
-                        toggleNav={toggleNavVisible}
-                        headerButtons={headerButtons}
-                        isSmallScreen={isSmallScreen}
-                      />
-                      {/* 관제 페이지 메뉴 버전1 */}
-                      <Suspense fallback={null}>
-                        <MonitoringMenu />
-                      </Suspense>
-                      {/* 관제 페이지 메뉴 버전2*/}
-                      <div className="mb-4 space-y-1">
+                      <div className="flex flex-1 flex-col bg-[#145082] text-white">
+                        {/* 왼쪽 사이드 바 맨위 */}
+                        <MemoNewChat
+                          subHeaders={subHeaders}
+                          toggleNav={toggleNavVisible}
+                          headerButtons={headerButtons}
+                          isSmallScreen={isSmallScreen}
+                        />
+                        
+                        {/* 왼쪽 사이드 바 맨위 바로 밑 */}
+                        <div className="px-2 pb-2 md:px-2 md:pb-3">
+                          <Suspense fallback={null}>
+                            <AccountSettings />
+                          </Suspense>
+                        </div>
+                      </div>
+                      
+                      {/* 관제 페이지 메뉴 버전 2가지 */}
+                      <div className="mb-4 mt-4 space-y-1">
+                        <Suspense fallback={null}>
+                          <MonitoringMenu />
+                        </Suspense>
+
                         <div
                           className="flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm font-medium text-text-primary hover:bg-surface-tertiary"
                           onClick={() => navigate('/monitoring/asset-management')}
@@ -250,12 +276,15 @@ const Nav = memo(
                         loadMoreConversations={loadMoreConversations}
                         isLoading={isFetchingNextPage || showLoading || isLoading}
                         isSearchLoading={isSearchLoading}
+                        headerButtons={headerButtons}
                       />
+                      
+                      {/* 지원 버튼들 */}
+                      <Suspense fallback={null}>
+                        <SupportButtons />
+                      </Suspense>
                     </div>
-                    {/* 왼쪽 사이드 바 맨아래 */}
-                    <Suspense fallback={null}>
-                      <AccountSettings />
-                    </Suspense>
+                    
                   </nav>
                 </div>
               </div>
