@@ -98,10 +98,12 @@ function ChatView({ index = 0 }: { index?: number }) {
                     )}
                   >
                     <ChatForm index={index} />
-                    {isLandingPage ? <ConversationStarters /> : <Footer />}
+                    {/* 이용약관 제거 <Footer /> -> null 변경*/}
+                    {isLandingPage ? <ConversationStarters /> : null}
                   </div>
                 </div>
-                {isLandingPage && <Footer />}
+                {/* 이용약관 제거 */}
+                {/* {isLandingPage && <Footer />} */}
               </>
             </div>
           </Presentation>

@@ -90,7 +90,8 @@ function AuthLayout({
             )}
         </div>
       </div>
-      <Footer startupConfig={startupConfig} />
+      {/* 이용약관 제거 */}
+      {/* <Footer startupConfig={startupConfig} /> */}
     </div>
   );
 }

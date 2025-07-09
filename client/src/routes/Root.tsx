@@ -79,7 +79,8 @@ export default function Root() {
               </div>
             </div>
           </AgentsMapContext.Provider>
-          {config?.interface?.termsOfService?.modalAcceptance === true && (
+          {/* 이용약관 주석처리 */}
+          {/* {config?.interface?.termsOfService?.modalAcceptance === true && (
             <TermsAndConditionsModal
               open={showTerms}
               onOpenChange={setShowTerms}
@@ -88,7 +89,7 @@ export default function Root() {
               title={config.interface.termsOfService.modalTitle}
               modalContent={config.interface.termsOfService.modalContent}
             />
-          )}
+          )} */}
         </AssistantsMapContext.Provider>
       </FileMapContext.Provider>
     </SetConvoProvider>
